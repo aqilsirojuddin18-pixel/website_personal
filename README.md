@@ -1,2 +1,3159 @@
 # website_personal
-web akuntan
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pencatatan Keuangan</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f6fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+}
+        .nav {
+            display: flex;
+            background-color: var(--dark-color);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary-color);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row > div {
+            flex: 1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: var(--light-color);
+        }
+        
+        .text-danger {
+            color: var(--danger-color);
+        }
+        
+        .text-success {
+            color: var(--success-color);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .close {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .hide {
+            display: none;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .time-filter {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .time-filter button {
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .time-filter button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 3px;
+        }
+        
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+
+        /* Responsive Styles */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 20px;
+    }
+    .nav {
+        flex-direction: column;
+    }
+    .nav-item {
+        padding: 10px;
+        font-size: 14px;
+    }
+    .dashboard-stats {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    .stat-card h3 {
+        font-size: 12px;
+    }
+    .stat-card .value {
+        font-size: 18px;
+    }
+    table {
+        font-size: 12px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    table th, table td {
+        padding: 8px;
+    }
+    .card {
+        padding: 15px;
+    }
+    .card-title {
+        font-size: 16px;
+    }
+    .form-control {
+        font-size: 12px;
+        padding: 8px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .btn {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+    .modal-title {
+        font-size: 16px;
+    }
+    .time-filter button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .chart-container {
+        height: 200px;
+    }
+}
+
+ /* Gaya dasar */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            padding: 20px;
+            padding-bottom: 80px; /* Padding untuk konten utama */
+        }
+
+        /* Gaya untuk header */
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 20px;
+    }
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    .card-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .card-title button {
+        margin-top: 10px;
+    }
+    table th, table td {
+        padding: 6px;
+    }
+}
+
+    /* Gaya dasar */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+}
+
+.container {
+    padding: 20px;
+    padding-bottom: 80px; /* Padding untuk konten utama */
+}
+
+
+
+.page.active {
+    display: block;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.nav-item span:first-child {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-item.active {
+    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.nav-item:hover {
+    color: #3498db;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    .nav-item {
+        font-size: 12px;
+    }
+
+    .nav-item span:first-child {
+        font-size: 18px;
+    }
+}
+
+/* Gaya untuk form input */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: opacity 0.3s;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.8;
+}
+
+/* Perkecil ukuran huruf semua tombol */
+button {
+    font-size: 11px; /* Ukuran huruf yang diinginkan */
+    padding: 6px 10px; /* Sesuaikan padding agar tombol tetap proporsional */
+}
+
+/* Perkecil ukuran huruf untuk tombol dengan class btn */
+.btn {
+    font-size: 11px; /* Ukuran huruf yang diinginkan */
+    padding: 6px 10px; /* Sesuaikan padding agar tombol tetap proporsional */
+}
+
+/* Perkecil ukuran huruf untuk tombol dengan class btn-primary, btn-success, dll. */
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-warning {
+    font-size: 11px; /* Ukuran huruf yang diinginkan */
+    padding: 6px 10px; /* Sesuaikan padding agar tombol tetap proporsional */
+}
+
+/* Perkecil ukuran huruf tombol di dalam modal */
+.modal button {
+    font-size: 11px; /* Ukuran huruf yang diinginkan */
+    padding: 6px 10px; /* Sesuaikan padding agar tombol tetap proporsional */
+}
+
+/* Perkecil ukuran huruf tombol di dalam tabel */
+table button {
+    font-size: 11px; /* Ukuran huruf yang diinginkan */
+    padding: 6px 10px; /* Sesuaikan padding agar tombol tetap proporsional */
+}
+
+.button-group {
+    display: flex;
+    gap: 2px;
+    margin-top: 10px;
+    margin-bottom: 10px; /* Tambahkan margin bottom */
+}
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Aplikasi Pencatatan Keuangan</h1>
+        </div>
+        
+       <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-target="dashboard">
+            <span>🏠</span>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" data-target="transaksi">
+            <span>💳</span>
+            <span>Transaksi</span>
+        </div>
+        <div class="nav-item" data-target="kategori">
+            <span>📂</span>
+            <span>Kategori</span>
+        </div>
+        <div class="nav-item" data-target="tabungan">
+            <span>💰</span>
+            <span>Tabungan</span>
+        </div>
+        <div class="nav-item" data-target="hutang">
+            <span>📉</span>
+            <span>Hutang</span>
+        </div>
+        <div class="nav-item" data-target="pengaturan">
+        <span>⚙️</span>
+        <span>Pengaturan</span>
+    </div>
+        
+    </div>
+        
+        <!-- Dashboard -->
+        <div class="page" id="dashboard">
+            <div class="time-filter">
+                <button class="active" data-period="daily">Harian</button>
+                <button data-period="weekly">Mingguan</button>
+                <button data-period="monthly">Bulanan</button>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>Total Pemasukan</h3>
+                    <div class="value text-success" id="total-income">Rp0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Pengeluaran</h3>
+                    <div class="value text-danger" id="total-expense">Rp0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Saldo</h3>
+                    <div class="value" id="balance">Rp0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Tabungan</h3>
+                    <div class="value text-primary" id="total-savings">Rp0</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Grafik Keuangan</div>
+                <div class="chart-container">
+                    <canvas id="finance-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Pengeluaran per Kategori</div>
+                <div class="chart-container">
+                    <canvas id="category-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transaksi -->
+        <div class="page hide" id="transaksi">
+            <div class="card">
+                <div class="card-title">
+                    <span>Daftar Transaksi</span>
+                </div>
+
+                <div class="button-group">
+    <button class="btn btn-success" id="btn-export-excel">Export Excel</button>
+                    <button class="btn btn-warning" id="btn-export-pdf">Export PDF</button>
+                    <button class="btn btn-danger" id="btn-clear-transactions">Hapus Transaksi</button>
+                    <button class="btn btn-primary" id="btn-add-transaction">Tambah Transaksi</button>
+                    </div>
+                
+                <div class="time-filter">
+                    <button class="active" data-period="daily">Harian</button>
+                    <button data-period="weekly">Mingguan</button>
+                    <button data-period="monthly">Bulanan</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="search-date">Cari Berdasarkan Tanggal:</label>
+                    <input type="date" id="search-date" class="form-control">
+                </div>
+                <table id="transaction-table">
+                   <table id="transaction-table">
+    <thead>
+        <tr>
+            <th>Tanggal</th>
+            <th>Deskripsi</th>
+            <th>Kategori</th>
+            <th>Pemasukan</th>
+            <th>Pengeluaran</th>
+            <th>Saldo</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data transaksi akan diisi di sini -->
+    </tbody>
+</table>
+                        <!-- Data transaksi akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Kategori -->
+        <div class="page hide" id="kategori">
+            <div class="card">
+                <div class="card-title">
+                    <span>Daftar Kategori</span>
+                </div>
+                
+<div class="button-group">
+<button id="btn-clear-categories" class="btn btn-danger">Hapus Kategori</button>
+                    <button class="btn btn-primary" id="btn-add-category">Tambah Kategori</button>
+                    </div>
+
+                <table id="category-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Kategori</th>
+                            <th>Jenis</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data kategori akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tabungan -->
+        <div class="page hide" id="tabungan">
+            <div class="card">
+                <div class="card-title">
+                    <span>Daftar Tabungan</span>
+                </div>
+                
+<div class="button-group">
+<button class="btn btn-success" id="btn-export-savings-excel">Export Excel</button>
+                    <button class="btn btn-warning" id="btn-export-savings-pdf">Export PDF</button>
+                      <button class="btn btn-danger" id="btn-clear-savings">Hapus Data</button>
+                    <button class="btn btn-primary" id="btn-add-savings">Tambah Tabungan</button>
+                </div>
+
+
+                <table id="savings-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Tabungan</th>
+                            <th>Target</th>
+                            <th>Saldo Saat Ini</th>
+                            <th>Progress</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data tabungan akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span>Histori Tabungan</span>
+                    <button class="btn btn-danger" id="btn-clear-savings-history">Hapus Semua Histori</button>
+                </div>
+                
+                <table id="savings-history-table">
+                    <thead>
+                        <tr>
+                <th>Tanggal</th>
+                <th>Nama Tabungan</th>
+                <th>Setoran</th>
+                <th>Penarikan</th>
+                <th>Saldo</th>
+                <th>Aksi</th>
+            </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data histori tabungan akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Hutang -->
+        <div class="page hide" id="hutang">
+            <div class="card">
+                <div class="card-title">
+                    <span>Daftar Hutang</span>
+                </div>
+                
+<div class="button-group">
+<button class="btn btn-success" id="btn-export-debt-excel">Export Excel</button>
+                    <button class="btn btn-warning" id="btn-export-debt-pdf">Export PDF</button>
+                    <button class="btn btn-danger" id="btn-clear-debts">Hapus Data</button>
+                    <button class="btn btn-primary" id="btn-add-debt">Tambah Hutang</button>
+                </div>
+
+
+                <table id="debt-table">
+                    <thead>
+                        <tr>
+                            <th>Nama/Deskripsi</th>
+                            <th>Tanggal</th>
+                            <th>Jatuh Tempo</th>
+                            <th>Jumlah</th>
+                            <th>Sisa</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data hutang akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span>Histori Pembayaran Hutang</span>
+                    <button class="btn btn-danger" id="btn-clear-debt-history">Hapus Semua Histori</button>
+                </div>
+                
+                <table id="debt-history-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Hutang</th>
+                            <th>Jumlah Pembayaran</th>
+                            <th>Aksi</th> <!-- Kolom untuk tombol edit/hapus per baris -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data histori pembayaran hutang akan ditampilkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Container untuk Pengaturan -->
+<div class="page hide" id="pengaturan">
+    <div class="card">
+        <div class="card-title">Pengaturan</div>
+        <form id="pengaturan-form">
+            <div class="form-group">
+                <label for="judul-aplikasi">Judul Aplikasi</label>
+                <input type="text" id="judul-aplikasi" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
+
+        <!-- Modal Edit Histori Pembayaran Hutang -->
+<div class="modal" id="edit-debt-history-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Histori Pembayaran Hutang</div>
+            <span class="close">&times;</span>
+        </div>
+        <form id="edit-debt-history-form">
+            <input type="hidden" id="edit-debt-history-id">
+            <div class="form-group">
+                <label for="edit-debt-history-date">Tanggal</label>
+                <input type="date" id="edit-debt-history-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-debt-history-amount">Jumlah Pembayaran (Rp)</label>
+                <input type="number" id="edit-debt-history-amount" class="form-control" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
+        <!-- Modal Edit Hutang -->
+<div class="modal" id="edit-debt-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Hutang</div>
+            <span class="close">&times;</span>
+        </div>
+        <form id="edit-debt-form">
+            <input type="hidden" id="edit-debt-id">
+            <div class="form-group">
+                <label for="edit-debt-name">Nama/Deskripsi</label>
+                <input type="text" id="edit-debt-name" class="form-control" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit-debt-date">Tanggal</label>
+                    <input type="date" id="edit-debt-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-debt-due-date">Jatuh Tempo</label>
+                    <input type="date" id="edit-debt-due-date" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="edit-debt-amount">Jumlah (Rp)</label>
+                <input type="number" id="edit-debt-amount" class="form-control" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
+        <!-- Modal Tambah Transaksi -->
+        <div class="modal" id="transaction-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Tambah Transaksi</div>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="transaction-form">
+                    <input type="hidden" id="transaction-id">
+                    <div class="form-group">
+                        <label for="transaction-date">Tanggal</label>
+                        <input type="date" id="transaction-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transaction-description">Deskripsi</label>
+                        <input type="text" id="transaction-description" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transaction-type">Jenis</label>
+                            <select id="transaction-type" class="form-control" required>
+                                <option value="income">Pemasukan</option>
+                                <option value="expense">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction-category">Kategori</label>
+                            <select id="transaction-category" class="form-control" required>
+                                <!-- Opsi kategori akan diisi secara dinamis -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="transaction-amount">Jumlah (Rp)</label>
+                        <input type="number" id="transaction-amount" class="form-control" min="0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal Tambah Kategori -->
+        
+        <div class="modal" id="category-modal">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    
+                    <div class="modal-title">Tambah Kategori</div>
+                    <span class="close">&times;</span>
+                </div>
+                
+                <form id="category-form">
+                    <input type="hidden" id="category-id">
+                    <div class="form-group">
+                        <label for="category-name">Nama Kategori</label>
+                        <input type="text" id="category-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category-type">Jenis</label>
+                        <select id="category-type" class="form-control" required>
+                            <option value="income">Pemasukan</option>
+                            <option value="expense">Pengeluaran</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+                
+            </div>
+            
+        </div>
+     
+        
+        <!-- Modal Tambah Tabungan -->
+        <div class="modal" id="savings-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Tambah Tabungan</div>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="savings-form">
+                    <input type="hidden" id="savings-id">
+                    <div class="form-group">
+                        <label for="savings-name">Nama Tabungan</label>
+                        <input type="text" id="savings-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-target">Target (Rp)</label>
+                        <input type="number" id="savings-target" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-initial">Saldo Awal (Rp)</label>
+                        <input type="number" id="savings-initial" class="form-control" min="0" value="0">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal Edit Histori Tabungan -->
+<div class="modal" id="edit-savings-history-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Histori Tabungan</div>
+            <span class="close">&times;</span>
+        </div>
+        <form id="edit-savings-history-form">
+            <input type="hidden" id="edit-savings-history-id">
+            <div class="form-group">
+                <label for="edit-savings-history-date">Tanggal</label>
+                <input type="date" id="edit-savings-history-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-savings-history-type">Jenis</label>
+                <select id="edit-savings-history-type" class="form-control" required>
+                    <option value="deposit">Setoran</option>
+                    <option value="withdraw">Penarikan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-savings-history-amount">Jumlah (Rp)</label>
+                <input type="number" id="edit-savings-history-amount" class="form-control" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
+        <!-- Modal Transaksi Tabungan -->
+        <div class="modal" id="savings-transaction-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Transaksi Tabungan</div>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="savings-transaction-form">
+                    <input type="hidden" id="savings-transaction-id">
+                    <div class="form-group">
+                        <label for="savings-transaction-date">Tanggal</label>
+                        <input type="date" id="savings-transaction-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-transaction-type">Jenis</label>
+                        <select id="savings-transaction-type" class="form-control" required>
+                            <option value="deposit">Setoran</option>
+                            <option value="withdraw">Penarikan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-transaction-amount">Jumlah (Rp)</label>
+                        <input type="number" id="savings-transaction-amount" class="form-control" min="0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal Tambah Hutang -->
+        <div class="modal" id="debt-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Tambah Hutang</div>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="debt-form">
+                    <input type="hidden" id="debt-id">
+                    <div class="form-group">
+                        <label for="debt-name">Nama/Deskripsi</label>
+                        <input type="text" id="debt-name" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="debt-date">Tanggal</label>
+                            <input type="date" id="debt-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="debt-due-date">Jatuh Tempo</label>
+                            <input type="date" id="debt-due-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="debt-amount">Jumlah (Rp)</label>
+                        <input type="number" id="debt-amount" class="form-control" min="0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal Pembayaran Hutang -->
+        <div class="modal" id="debt-payment-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Bayar Hutang</div>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="debt-payment-form">
+                    <input type="hidden" id="debt-payment-id">
+                    <div class="form-group">
+                        <label for="debt-payment-date">Tanggal</label>
+                        <input type="date" id="debt-payment-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="debt-payment-amount">Jumlah Pembayaran (Rp)</label>
+                        <input type="number" id="debt-payment-amount" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sisa Hutang: <span id="debt-remaining">Rp0</span></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        // Data Store
+       const appData = {
+    categories: JSON.parse(localStorage.getItem('categories')) || [],
+    transactions: JSON.parse(localStorage.getItem('transactions')) || [
+        {
+            id: 1,
+            date: '2023-10-01',
+            description: 'Gaji Bulanan',
+            category: 'Gaji',
+            type: 'income',
+            amount: 5000000
+        },
+        {
+            id: 2,
+            date: '2023-10-02',
+            description: 'Belanja Bulanan',
+            category: 'Belanja',
+            type: 'expense',
+            amount: 1000000
+        }
+    ],
+    savings: JSON.parse(localStorage.getItem('savings')) || [ { id: 1, name: 'Tabungan Darurat', target: 1000000, currentBalance: 300000 },
+        { id: 2, name: 'Tabungan Liburan', target: 5000000, currentBalance: 1000000 }
+    ],
+    savingsHistory: JSON.parse(localStorage.getItem('savingsHistory')) || [
+        {
+            id: 1,
+            date: '2023-10-01',
+            savingsId: 1,
+            type: 'deposit', // Jenis transaksi: deposit (setoran) atau withdraw (penarikan)
+            amount: 500000
+        },
+        {
+            id: 2,
+            date: '2023-10-02',
+            savingsId: 1,
+            type: 'withdraw',
+            amount: 200000
+        },
+        {
+            id: 3,
+            date: '2023-10-03',
+            savingsId: 2,
+            type: 'deposit',
+            amount: 1000000
+        }
+    ],
+    debts: JSON.parse(localStorage.getItem('debts')) || [],
+    debtHistory: JSON.parse(localStorage.getItem('debtHistory')) || [],
+    currentPeriod: 'daily'
+};
+
+
+
+        // Save data to localStorage
+        function saveData() {
+    localStorage.setItem('categories', JSON.stringify(appData.categories));
+    localStorage.setItem('transactions', JSON.stringify(appData.transactions));
+    localStorage.setItem('savings', JSON.stringify(appData.savings));
+    localStorage.setItem('savingsHistory', JSON.stringify(appData.savingsHistory));
+    localStorage.setItem('debts', JSON.stringify(appData.debts));
+    localStorage.setItem('debtHistory', JSON.stringify(appData.debtHistory));
+}
+    function formatCurrency(amount) {
+    if (amount === undefined || amount === null || isNaN(amount)) {
+        return 'Rp0';
+    }
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) {
+        return 'Rp0';
+    }
+    return 'Rp' + numericAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
+const newTransaction = {
+    id: generateId(), // Pastikan generateId() menghasilkan ID unik
+    date: '2023-10-01',
+    description: 'Gaji Bulanan',
+    category: 'Gaji',
+    type: 'income',
+    amount: 5000000
+};
+
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('.page').forEach(page => page.classList.add('hide'));
+                document.getElementById(target).classList.remove('hide');
+
+                // Refresh data based on the current page
+                if (target === 'dashboard') {
+                    updateDashboard();
+                } else if (target === 'transaksi') {
+                    renderTransactions();
+                } else if (target === 'kategori') {
+                    renderCategories();
+                } else if (target === 'tabungan') {
+                    renderSavings();
+                    renderSavingsHistory();
+                } else if (target === 'hutang') {
+                    renderDebts();
+                    renderDebtHistory();
+                }
+            });
+        });
+
+        // Time Period Filter
+        document.querySelectorAll('.time-filter button').forEach(button => {
+            button.addEventListener('click', function() {
+                const parent = this.closest('.time-filter');
+                parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                appData.currentPeriod = this.getAttribute('data-period');
+
+                // Update based on the current page
+                const currentPage = document.querySelector('.nav-item.active').getAttribute('data-target');
+                if (currentPage === 'dashboard') {
+                    updateDashboard();
+                } else if (currentPage === 'transaksi') {
+                    renderTransactions();
+                }
+            });
+        });
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        document.querySelectorAll('.modal .close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.style.display = 'none';
+            });
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Filter transactions by period
+        function filterTransactionsByPeriod(transactions) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    return transactions.filter(transaction => {
+        if (!transaction.date) return false; // Skip transaksi tanpa tanggal
+
+        const transactionDate = new Date(transaction.date);
+
+        if (appData.currentPeriod === 'daily') {
+            return transactionDate.getFullYear() === today.getFullYear() &&
+                   transactionDate.getMonth() === today.getMonth() &&
+                   transactionDate.getDate() === today.getDate();
+        } else if (appData.currentPeriod === 'weekly') {
+            const firstDayOfWeek = new Date(today);
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+            firstDayOfWeek.setDate(diff);
+
+            return transactionDate >= firstDayOfWeek;
+        } else if (appData.currentPeriod === 'monthly') {
+            return transactionDate.getMonth() === today.getMonth() &&
+                   transactionDate.getFullYear() === today.getFullYear();
+        }
+
+        return true;
+    });
+}
+        // -------------------- DASHBOARD --------------------
+        let financeChart;
+        let categoryChart;
+
+        function updateDashboard() {
+    const filteredTransactions = filterTransactionsByPeriod(appData.transactions);
+
+    // Calculate totals
+    const totalIncome = filteredTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+    const totalExpense = filteredTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+    const balance = totalIncome - totalExpense;
+    const totalSavings = appData.savings.reduce((sum, s) => sum + s.currentBalance, 0);
+
+    // Update dashboard stats
+    document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+    document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
+    document.getElementById('balance').textContent = formatCurrency(balance);
+    document.getElementById('total-savings').textContent = formatCurrency(totalSavings);
+
+    // Update finance chart
+    updateFinanceChart(filteredTransactions);
+
+    // Update category chart
+    updateCategoryChart(filteredTransactions);
+}
+        function updateFinanceChart(transactions) {
+    const ctx = document.getElementById('finance-chart').getContext('2d');
+
+    if (financeChart) {
+        financeChart.destroy();
+    }
+
+    const labels = [];
+    const incomeData = [];
+    const expenseData = [];
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    if (appData.currentPeriod === 'daily') {
+        for (let i = 0; i < 24; i++) {
+            labels.push(`${i}:00`);
+            incomeData.push(0);
+            expenseData.push(0);
+        }
+
+        transactions.forEach(t => {
+            const date = new Date(t.date);
+            const hour = date.getHours();
+            if (t.type === 'income') {
+                incomeData[hour] += t.amount;
+            } else {
+                expenseData[hour] += t.amount;
+            }
+        });
+    } else if (appData.currentPeriod === 'weekly') {
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        for (let i = 0; i < 7; i++) {
+            labels.push(days[i]);
+            incomeData.push(0);
+            expenseData.push(0);
+        }
+
+        transactions.forEach(t => {
+            const date = new Date(t.date);
+            const day = date.getDay();
+            if (t.type === 'income') {
+                incomeData[day] += t.amount;
+            } else {
+                expenseData[day] += t.amount;
+            }
+        });
+    } else if (appData.currentPeriod === 'monthly') {
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        for (let i = 1; i <= daysInMonth; i++) {
+            labels.push(i);
+            incomeData.push(0);
+            expenseData.push(0);
+        }
+
+        transactions.forEach(t => {
+            const date = new Date(t.date);
+            const day = date.getDate() - 1;
+            if (t.type === 'income') {
+                incomeData[day] += t.amount;
+            } else {
+                expenseData[day] += t.amount;
+            }
+        });
+    }
+
+    financeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Pemasukan',
+                    data: incomeData,
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                    fill: true
+                },
+                {
+                    label: 'Pengeluaran',
+                    data: expenseData,
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+       function updateCategoryChart(transactions) {
+    const ctx = document.getElementById('category-chart').getContext('2d');
+
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    const categories = appData.categories.filter(c => c.type === 'expense');
+    const categoryMap = {};
+    categories.forEach(c => {
+        categoryMap[c.id] = { name: c.name, total: 0 };
+    });
+
+    transactions.filter(t => t.type === 'expense').forEach(t => {
+        if (categoryMap[t.category]) {
+            categoryMap[t.category].total += t.amount;
+        }
+    });
+
+    const labels = [];
+    const data = [];
+    Object.values(categoryMap).forEach(c => {
+        labels.push(c.name);
+        data.push(c.total);
+    });
+
+    categoryChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    data: data,
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#e74c3c',
+                        '#f39c12',
+                        '#9b59b6',
+                        '#34495e'
+                    ]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+        // -------------------- TRANSAKSI --------------------
+        function renderTransactions() {
+    const tbody = document.querySelector('#transaction-table tbody');
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    if (appData.transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7">Tidak ada transaksi</td></tr>';
+        return;
+    }
+
+// Urutkan transaksi berdasarkan tanggal (dari yang terlama ke terbaru)
+    const sortedTransactions = appData.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let saldo = 0; // Inisialisasi saldo
+
+    appData.transactions.forEach(t => {
+        if (t.type === 'income') {
+            saldo += t.amount;
+        } else if (t.type === 'expense') {
+            saldo -= t.amount;
+        }
+
+        // Cari kategori berdasarkan ID
+        const category = appData.categories.find(c => c.id === t.category);
+        const categoryName = category ? category.name : 'Kategori Tidak Ditemukan';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(t.date).toLocaleDateString()}</td>
+            <td>${t.description}</td>
+            <td>${categoryName}</td>
+            <td class="text-success">${t.type === 'income' ? formatCurrency(t.amount) : '-'}</td>
+            <td class="text-danger">${t.type === 'expense' ? formatCurrency(t.amount) : '-'}</td>
+            <td>${formatCurrency(saldo)}</td>
+            <td>
+                <button class="btn btn-warning btn-edit-transaction" data-id="${t.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-transaction" data-id="${t.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit dan hapus
+    attachTransactionEventListeners();
+}
+    // Pasang event listener untuk tombol edit dan hapus
+    function attachTransactionEventListeners() {
+    // Pasang event listener untuk tombol edit
+    document.querySelectorAll('.btn-edit-transaction').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-id');
+            const transaction = appData.transactions.find(t => t.id === transactionId);
+            if (transaction) {
+                openEditTransactionModal(transaction);
+            }
+        });
+    });
+
+    // Pasang event listener untuk tombol hapus
+    document.querySelectorAll('.btn-delete-transaction').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-id');
+            if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+                appData.transactions = appData.transactions.filter(t => t.id !== transactionId);
+                saveData();
+                renderTransactions();
+                updateDashboard();
+            }
+        });
+    });
+}
+
+        function openEditTransactionModal(transaction) {
+    document.getElementById('transaction-id').value = transaction.id;
+    document.getElementById('transaction-date').value = transaction.date.split('T')[0];
+    document.getElementById('transaction-description').value = transaction.description;
+    document.getElementById('transaction-type').value = transaction.type;
+    document.getElementById('transaction-amount').value = transaction.amount;
+
+    // Muat kategori berdasarkan jenis transaksi
+    loadCategories(transaction.type);
+
+    // Set kategori yang dipilih
+    const categorySelect = document.getElementById('transaction-category');
+    categorySelect.value = transaction.category;
+
+    openModal('transaction-modal');
+}
+
+        document.getElementById('btn-add-transaction').addEventListener('click', function() {
+            document.getElementById('transaction-form').reset();
+            document.getElementById('transaction-id').value = '';
+            openModal('transaction-modal');
+        });
+
+        document.getElementById('transaction-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const transactionId = document.getElementById('transaction-id').value;
+    const date = document.getElementById('transaction-date').value;
+    const description = document.getElementById('transaction-description').value;
+    const type = document.getElementById('transaction-type').value;
+    const category = document.getElementById('transaction-category').value;
+    const amount = parseFloat(document.getElementById('transaction-amount').value);
+
+    // Validasi kategori
+    const categoryExists = appData.categories.some(c => c.id === category);
+    if (!categoryExists) {
+        alert('Kategori tidak valid! Silakan pilih kategori yang tersedia.');
+        return;
+    }
+
+    if (transactionId) {
+        // Update existing transaction
+        const transaction = appData.transactions.find(t => t.id === transactionId);
+        if (transaction) {
+            transaction.date = date;
+            transaction.description = description;
+            transaction.type = type;
+            transaction.category = category;
+            transaction.amount = amount;
+        }
+    } else {
+        // Add new transaction
+        const newTransaction = {
+            id: generateId(),
+            date: date,
+            description: description,
+            type: type,
+            category: category,
+            amount: amount
+        };
+        appData.transactions.push(newTransaction);
+    }
+
+// Urutkan transaksi setelah menambahkan data baru
+    appData.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    saveData();
+    closeModal('transaction-modal');
+    renderTransactions();
+    updateDashboard();
+});
+
+        // -------------------- KATEGORI --------------------
+ // Fungsi untuk merender kategori
+// Fungsi untuk merender kategori
+function renderCategories() {
+    const tbody = document.querySelector('#category-table tbody');
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    if (appData.categories.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">Tidak ada kategori</td></tr>';
+        return;
+    }
+
+    appData.categories.forEach(c => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${c.name}</td>
+            <td>${c.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</td>
+            <td>
+                <button class="btn btn-warning btn-edit-category" data-id="${c.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-category" data-id="${c.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit dan hapus
+    document.querySelectorAll('.btn-edit-category').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id');
+            const category = appData.categories.find(c => c.id === categoryId);
+            if (category) {
+                openEditCategoryModal(category);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-category').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id');
+            if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
+                appData.categories = appData.categories.filter(c => c.id !== categoryId);
+                saveData(); // Simpan data ke localStorage
+                renderCategories(); // Render ulang tabel kategori
+            }
+        });
+    });
+}
+// -------------------- TABUNGAN --------------------
+function renderSavings() {
+    const tbody = document.querySelector('#savings-table tbody');
+    tbody.innerHTML = '';
+
+    if (appData.savings.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Tidak ada tabungan</td></tr>';
+        return;
+    }
+
+    appData.savings.forEach(s => {
+        const progress = (s.currentBalance / s.target) * 100;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${s.name}</td>
+            <td>${formatCurrency(s.target)}</td>
+            <td>${formatCurrency(s.currentBalance)}</td>
+            <td>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                </div>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-add-savings-transaction" data-id="${s.id}">Transaksi</button>
+                <button class="btn btn-warning btn-edit-savings" data-id="${s.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-savings" data-id="${s.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Attach event listeners for buttons
+    document.querySelectorAll('.btn-add-savings-transaction').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const savingsId = this.getAttribute('data-id');
+            const savings = appData.savings.find(s => s.id === savingsId);
+            if (savings) {
+                openSavingsTransactionModal(savings);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-edit-savings').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const savingsId = this.getAttribute('data-id');
+            const savings = appData.savings.find(s => s.id === savingsId);
+            if (savings) {
+                openEditSavingsModal(savings);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-savings').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const savingsId = this.getAttribute('data-id');
+            if (confirm('Apakah Anda yakin ingin menghapus tabungan ini?')) {
+                appData.savings = appData.savings.filter(s => s.id !== savingsId);
+                saveData();
+                renderSavings();
+            }
+        });
+    });
+}
+
+function renderSavingsHistory() {
+    const tbody = document.querySelector('#savings-history-table tbody');
+    if (!tbody) {
+        console.error('Elemen tbody tidak ditemukan!');
+        return;
+    }
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    if (appData.savingsHistory.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Tidak ada histori tabungan</td></tr>';
+        return;
+    }
+
+    // Urutkan histori tabungan berdasarkan tanggal (dari yang terlama ke terbaru)
+    const sortedSavingsHistory = appData.savingsHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let saldo = 0; // Variabel untuk menyimpan saldo sementara
+
+            appData.savingsHistory.forEach(history => {
+                const savings = appData.savings.find(s => s.id === history.savingsId);
+                const namaTabungan = savings ? savings.name : 'Tabungan Tidak Ditemukan';
+
+                // Hitung setoran dan penarikan
+                const setoran = history.type === 'deposit' ? history.amount : 0;
+                const penarikan = history.type === 'withdraw' ? history.amount : 0;
+
+                // Update saldo
+                saldo += setoran - penarikan;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(history.date).toLocaleDateString()}</td>
+                    <td>${namaTabungan}</td>
+                    <td>${setoran > 0 ? formatCurrency(setoran) : '-'}</td>
+                    <td>${penarikan > 0 ? formatCurrency(penarikan) : '-'}</td>
+                    <td>${formatCurrency(saldo)}</td>
+                    <td>
+                    <div class="btn-aksi">
+                            <button class="btn btn-warning btn-edit-savings-history" data-id="${history.id}">Edit</button>
+                            <button class="btn btn-danger btn-delete-savings-history" data-id="${history.id}">Hapus</button>
+                        </div>
+                
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit dan hapus
+    attachSavingsHistoryEventListeners();
+}
+
+function openEditSavingsHistoryModal(history) {
+    document.getElementById('edit-savings-history-id').value = history.id;
+    document.getElementById('edit-savings-history-date').value = history.date.split('T')[0];
+    document.getElementById('edit-savings-history-type').value = history.type;
+    document.getElementById('edit-savings-history-amount').value = history.amount;
+    openModal('edit-savings-history-modal');
+}
+
+function saveEditedSavingsHistory(e) {
+    e.preventDefault();
+
+    const historyId = document.getElementById('edit-savings-history-id').value;
+    const date = document.getElementById('edit-savings-history-date').value;
+    const type = document.getElementById('edit-savings-history-type').value;
+    const amount = parseFloat(document.getElementById('edit-savings-history-amount').value);
+
+    const history = appData.savingsHistory.find(sh => sh.id === historyId);
+    if (history) {
+        history.date = date;
+        history.type = type;
+        history.amount = amount;
+
+        saveData(); // Simpan perubahan ke localStorage
+        closeModal('edit-savings-history-modal');
+        renderSavingsHistory(); // Render ulang tabel histori tabungan
+    }
+}
+
+function attachSavingsHistoryEventListeners() {
+    // Pasang event listener untuk tombol edit
+    document.querySelectorAll('.btn-edit-savings-history').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const historyId = this.getAttribute('data-id');
+            const history = appData.savingsHistory.find(sh => sh.id === historyId);
+            if (history) {
+                openEditSavingsHistoryModal(history);
+            }
+        });
+    });
+
+    // Pasang event listener untuk tombol hapus
+    document.querySelectorAll('.btn-delete-savings-history').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const historyId = this.getAttribute('data-id');
+            deleteSavingsHistory(historyId);
+        });
+    });
+
+    // Pasang event listener untuk form edit histori tabungan
+    document.getElementById('edit-savings-history-form').addEventListener('submit', saveEditedSavingsHistory);
+}
+
+function deleteSavingsHistory(historyId) {
+    if (confirm('Apakah Anda yakin ingin menghapus histori ini?')) {
+        appData.savingsHistory = appData.savingsHistory.filter(sh => sh.id !== historyId);
+        saveData(); // Simpan perubahan ke localStorage
+        renderSavingsHistory(); // Render ulang tabel histori tabungan
+    }
+}
+
+function openEditSavingsModal(savings) {
+    document.getElementById('savings-id').value = savings.id;
+    document.getElementById('savings-name').value = savings.name;
+    document.getElementById('savings-target').value = savings.target;
+    document.getElementById('savings-initial').value = savings.currentBalance;
+    openModal('savings-modal');
+}
+
+function openSavingsTransactionModal(savings) {
+    document.getElementById('savings-transaction-id').value = savings.id;
+    document.getElementById('savings-transaction-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('savings-transaction-type').value = 'deposit';
+    document.getElementById('savings-transaction-amount').value = '';
+    openModal('savings-transaction-modal');
+}
+
+document.getElementById('btn-add-savings').addEventListener('click', function() {
+    document.getElementById('savings-form').reset();
+    document.getElementById('savings-id').value = '';
+    openModal('savings-modal');
+});
+
+document.getElementById('savings-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const savingsId = document.getElementById('savings-id').value;
+    const name = document.getElementById('savings-name').value;
+    const target = parseFloat(document.getElementById('savings-target').value);
+    const initial = parseFloat(document.getElementById('savings-initial').value);
+
+    if (savingsId) {
+        // Update existing savings
+        const savings = appData.savings.find(s => s.id === savingsId);
+        if (savings) {
+            savings.name = name;
+            savings.target = target;
+            savings.currentBalance = initial;
+        }
+    } else {
+        // Add new savings
+        const newSavings = {
+            id: generateId(),
+            name: name,
+            target: target,
+            currentBalance: initial
+        };
+        appData.savings.push(newSavings);
+    }
+
+    saveData();
+    closeModal('savings-modal');
+    renderSavings();
+});
+
+document.getElementById('savings-transaction-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const savingsId = document.getElementById('savings-transaction-id').value;
+    const date = document.getElementById('savings-transaction-date').value;
+    const type = document.getElementById('savings-transaction-type').value;
+    const amount = parseFloat(document.getElementById('savings-transaction-amount').value);
+
+    const savings = appData.savings.find(s => s.id === savingsId);
+    if (savings) {
+        if (type === 'deposit') {
+            savings.currentBalance += amount;
+        } else if (type === 'withdraw') {
+            savings.currentBalance -= amount;
+        }
+
+        const newHistory = {
+            id: generateId(),
+            savingsId: savingsId,
+            date: date,
+            type: type,
+            amount: amount
+        };
+        appData.savingsHistory.push(newHistory);
+
+// Urutkan histori tabungan setelah menambahkan data baru
+        appData.savingsHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        saveData();
+        closeModal('savings-transaction-modal');
+        renderSavings();
+        renderSavingsHistory();
+    }
+});
+
+function initApp() {
+    // Load data dari localStorage
+    appData.savingsHistory = JSON.parse(localStorage.getItem('savingsHistory')) || [];
+
+    // Render histori tabungan
+    renderSavingsHistory();
+}
+
+// Panggil initApp setelah DOM selesai dimuat
+document.addEventListener('DOMContentLoaded', initApp);
+
+// -------------------- HUTANG --------------------
+function renderDebts() {
+    const tbody = document.querySelector('#debt-table tbody');
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    if (appData.debts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7">Tidak ada hutang</td></tr>';
+        return;
+    }
+
+    appData.debts.forEach(d => {
+        const remaining = d.amount - d.paid;
+        const status = remaining <= 0 ? 'Lunas' : 'Belum Lunas';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${d.name}</td>
+            <td>${new Date(d.date).toLocaleDateString()}</td>
+            <td>${d.dueDate ? new Date(d.dueDate).toLocaleDateString() : '-'}</td>
+            <td>${formatCurrency(d.amount)}</td>
+            <td>${formatCurrency(remaining)}</td>
+            <td>${status}</td>
+            <td>
+                <button class="btn btn-primary btn-pay-debt" data-id="${d.id}">Bayar</button>
+                <button class="btn btn-warning btn-edit-debt" data-id="${d.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-debt" data-id="${d.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit
+    attachDebtEventListeners();
+}
+
+function deleteDebt(debtId) {
+    if (confirm('Apakah Anda yakin ingin menghapus hutang ini?')) {
+        appData.debts = appData.debts.filter(d => d.id !== debtId);
+        saveData(); // Simpan perubahan ke localStorage
+        renderDebts(); // Render ulang tabel hutang
+    }
+}
+
+function openEditDebtModal(debt) {
+    document.getElementById('edit-debt-id').value = debt.id;
+    document.getElementById('edit-debt-name').value = debt.name;
+    document.getElementById('edit-debt-date').value = debt.date.split('T')[0];
+    document.getElementById('edit-debt-due-date').value = debt.dueDate ? debt.dueDate.split('T')[0] : '';
+    document.getElementById('edit-debt-amount').value = debt.amount;
+    openModal('edit-debt-modal');
+}
+
+function saveEditedDebt(e) {
+    e.preventDefault();
+
+    const debtId = document.getElementById('edit-debt-id').value;
+    const name = document.getElementById('edit-debt-name').value;
+    const date = document.getElementById('edit-debt-date').value;
+    const dueDate = document.getElementById('edit-debt-due-date').value;
+    const amount = parseFloat(document.getElementById('edit-debt-amount').value);
+
+    const debt = appData.debts.find(d => d.id === debtId);
+    if (debt) {
+        debt.name = name;
+        debt.date = date;
+        debt.dueDate = dueDate;
+        debt.amount = amount;
+
+        saveData(); // Simpan perubahan ke localStorage
+        closeModal('edit-debt-modal');
+        renderDebts(); // Render ulang tabel hutang
+    }
+}
+
+function attachDebtEventListeners() {
+    // Pasang event listener untuk tombol edit
+    document.querySelectorAll('.btn-edit-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            const debt = appData.debts.find(d => d.id === debtId);
+            if (debt) {
+                openEditDebtModal(debt);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-pay-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            const debt = appData.debts.find(d => d.id === debtId);
+            if (debt) {
+                openDebtPaymentModal(debt);
+            }
+        });
+    });
+
+    // Pasang event listener untuk tombol hapus
+    document.querySelectorAll('.btn-delete-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            deleteDebt(debtId);
+        });
+    });
+
+    // Pasang event listener untuk form edit hutang
+    document.getElementById('edit-debt-form').addEventListener('submit', saveEditedDebt);
+}
+
+function initApp() {
+    // Load data dari localStorage
+    appData.debts = JSON.parse(localStorage.getItem('debts')) || [];
+
+    // Render daftar hutang
+    renderDebts();
+}
+
+// Panggil initApp setelah DOM selesai dimuat
+document.addEventListener('DOMContentLoaded', initApp);
+    // Attach event listeners for buttons
+    document.querySelectorAll('.btn-pay-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            const debt = appData.debts.find(d => d.id === debtId);
+            if (debt) {
+                openDebtPaymentModal(debt);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-edit-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            const debt = appData.debts.find(d => d.id === debtId);
+            if (debt) {
+                openEditDebtModal(debt);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-debt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const debtId = this.getAttribute('data-id');
+            if (confirm('Apakah Anda yakin ingin menghapus hutang ini?')) {
+                appData.debts = appData.debts.filter(d => d.id !== debtId);
+                saveData();
+                renderDebts();
+            }
+        });
+    });
+
+
+    function renderDebtHistory() {
+    const tbody = document.querySelector('#debt-history-table tbody');
+    if (!tbody) {
+        console.error('Elemen tbody tidak ditemukan!');
+        return;
+    }
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    if (appData.debtHistory.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4">Tidak ada histori pembayaran hutang</td></tr>';
+        return;
+    }
+
+    // Urutkan histori pembayaran hutang berdasarkan tanggal (dari yang terlama ke terbaru)
+    const sortedDebtHistory = appData.debtHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    appData.debtHistory.forEach(dh => {
+        const debt = appData.debts.find(d => d.id === dh.debtId);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(dh.date).toLocaleDateString()}</td>
+            <td>${debt ? debt.name : '-'}</td>
+            <td>${formatCurrency(dh.amount)}</td>
+            <td>
+                <button class="btn btn-warning btn-edit-debt-history" data-id="${dh.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-debt-history" data-id="${dh.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit dan hapus
+    attachDebtHistoryEventListeners();
+}
+
+function deleteDebtHistory(historyId) {
+    if (confirm('Apakah Anda yakin ingin menghapus histori ini?')) {
+        appData.debtHistory = appData.debtHistory.filter(dh => dh.id !== historyId);
+        saveData(); // Simpan perubahan ke localStorage
+        renderDebtHistory(); // Render ulang tabel histori pembayaran hutang
+    }
+}
+
+function openEditDebtHistoryModal(history) {
+    document.getElementById('edit-debt-history-id').value = history.id;
+    document.getElementById('edit-debt-history-date').value = history.date.split('T')[0];
+    document.getElementById('edit-debt-history-amount').value = history.amount;
+    openModal('edit-debt-history-modal');
+}
+
+function saveEditedDebtHistory(e) {
+    e.preventDefault();
+
+    const historyId = document.getElementById('edit-debt-history-id').value;
+    const date = document.getElementById('edit-debt-history-date').value;
+    const amount = parseFloat(document.getElementById('edit-debt-history-amount').value);
+
+    const history = appData.debtHistory.find(dh => dh.id === historyId);
+    if (history) {
+        history.date = date;
+        history.amount = amount;
+
+        saveData(); // Simpan perubahan ke localStorage
+        closeModal('edit-debt-history-modal');
+        renderDebtHistory(); // Render ulang tabel histori pembayaran hutang
+    }
+}
+
+function attachDebtHistoryEventListeners() {
+    // Pasang event listener untuk tombol edit
+    document.querySelectorAll('.btn-edit-debt-history').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const historyId = this.getAttribute('data-id');
+            const history = appData.debtHistory.find(dh => dh.id === historyId);
+            if (history) {
+                openEditDebtHistoryModal(history);
+            }
+        });
+    });
+
+    // Pasang event listener untuk tombol hapus
+    document.querySelectorAll('.btn-delete-debt-history').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const historyId = this.getAttribute('data-id');
+            deleteDebtHistory(historyId);
+        });
+    });
+
+    // Pasang event listener untuk form edit histori pembayaran hutang
+    document.getElementById('edit-debt-history-form').addEventListener('submit', saveEditedDebtHistory);
+}
+
+function openDebtPaymentModal(debt) {
+    if (!debt) return; // Skip jika hutang tidak ditemukan
+
+    document.getElementById('debt-payment-id').value = debt.id;
+    document.getElementById('debt-payment-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('debt-payment-amount').value = '';
+    document.getElementById('debt-remaining').textContent = formatCurrency(debt.amount - debt.paid);
+    openModal('debt-payment-modal');
+}
+
+function openDebtPaymentModal(debt) {
+    document.getElementById('debt-payment-id').value = debt.id;
+    document.getElementById('debt-payment-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('debt-payment-amount').value = '';
+                document.getElementById('debt-remaining').textContent = formatCurrency(debt.amount - debt.paid);
+            openModal('debt-payment-modal');
+        }
+
+        document.getElementById('btn-add-debt').addEventListener('click', function() {
+            document.getElementById('debt-form').reset();
+            document.getElementById('debt-id').value = '';
+            openModal('debt-modal');
+        });
+
+        document.getElementById('debt-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const debtId = document.getElementById('debt-id').value;
+            const name = document.getElementById('debt-name').value;
+            const date = document.getElementById('debt-date').value;
+            const dueDate = document.getElementById('debt-due-date').value;
+            const amount = parseFloat(document.getElementById('debt-amount').value);
+
+            if (debtId) {
+                // Update existing debt
+                const debt = appData.debts.find(d => d.id === debtId);
+                if (debt) {
+                    debt.name = name;
+                    debt.date = date;
+                    debt.dueDate = dueDate;
+                    debt.amount = amount;
+                }
+            } else {
+                // Add new debt
+                const newDebt = {
+                    id: generateId(),
+                    name: name,
+                    date: date,
+                    dueDate: dueDate,
+                    amount: amount,
+                    paid: 0
+                };
+                appData.debts.push(newDebt);
+            }
+
+            saveData();
+            closeModal('debt-modal');
+            renderDebts();
+        });
+
+        document.getElementById('debt-payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const debtId = document.getElementById('debt-payment-id').value;
+            const date = document.getElementById('debt-payment-date').value;
+            const amount = parseFloat(document.getElementById('debt-payment-amount').value);
+
+            const debt = appData.debts.find(d => d.id === debtId);
+            if (debt) {
+                debt.paid += amount;
+
+                const newHistory = {
+                    id: generateId(),
+                    debtId: debtId,
+                    date: date,
+                    amount: amount
+                };
+                appData.debtHistory.push(newHistory);
+
+                 // Urutkan histori pembayaran hutang setelah menambahkan data baru
+        appData.debtHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+
+                saveData();
+                closeModal('debt-payment-modal');
+                renderDebts();
+                renderDebtHistory();
+            }
+        });
+
+        // Initialize the app
+        function initApp() {
+    // Tambahkan kategori default jika belum ada
+    if (appData.categories.length === 0) {
+        appData.categories = [
+            { id: generateId(), name: 'Gaji', type: 'income' },
+            { id: generateId(), name: 'Makanan', type: 'expense' },
+            { id: generateId(), name: 'Transportasi', type: 'expense' },
+            { id: generateId(), name: 'Belanja', type: 'expense' },
+            { id: generateId(), name: 'Hiburan', type: 'expense' }
+        ];
+        saveData();
+    }
+
+    // Inisialisasi lainnya
+    updateDashboard();
+    renderTransactions();
+    renderCategories();
+    renderSavings();
+    renderSavingsHistory();
+    renderDebts();
+    renderDebtHistory();
+}
+
+// Jalankan aplikasi
+initApp();
+        
+        // Fungsi untuk memuat kategori ke dropdown
+        function loadCategories(type) {
+    const categorySelect = document.getElementById('transaction-category');
+    categorySelect.innerHTML = '<option value="">Pilih Kategori</option>'; // Reset dropdown
+
+    // Filter kategori berdasarkan jenis (income/expense)
+    const filteredCategories = appData.categories.filter(c => c.type === type);
+    if (filteredCategories.length === 0) {
+        categorySelect.innerHTML = '<option value="">Tidak ada kategori tersedia</option>';
+    } else {
+        filteredCategories.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = c.name;
+            categorySelect.appendChild(option);
+        });
+    }
+}
+
+// Event listener untuk perubahan jenis transaksi (income/expense)
+document.getElementById('transaction-type').addEventListener('change', function() {
+    const type = this.value;
+    loadCategories(type); // Muat kategori berdasarkan jenis transaksi
+});
+
+// Saat membuka modal transaksi, muat kategori berdasarkan jenis transaksi yang dipilih
+document.getElementById('btn-add-transaction').addEventListener('click', function() {
+    const type = document.getElementById('transaction-type').value;
+    loadCategories(type); // Muat kategori saat modal dibuka
+});
+        function openEditCategoryModal(category) {
+    if (!category) return; // Skip jika kategori tidak ditemukan
+
+    document.getElementById('category-id').value = category.id;
+    document.getElementById('category-name').value = category.name;
+    document.getElementById('category-type').value = category.type;
+    openModal('category-modal');
+}
+        // Event listener untuk tombol "Tambah Kategori"
+document.getElementById('btn-add-category').addEventListener('click', function() {
+    document.getElementById('category-form').reset(); // Reset form
+    document.getElementById('category-id').value = ''; // Kosongkan ID (untuk mode tambah)
+    openModal('category-modal'); // Buka modal
+});
+
+// Event listener untuk form submit kategori
+document.getElementById('category-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const categoryId = document.getElementById('category-id').value;
+    const name = document.getElementById('category-name').value;
+    const type = document.getElementById('category-type').value;
+
+    if (categoryId) {
+        // Edit kategori yang sudah ada
+        const category = appData.categories.find(c => c.id === categoryId);
+        if (category) {
+            category.name = name;
+            category.type = type;
+        }
+    } else {
+        // Tambah kategori baru
+        const newCategory = {
+            id: generateId(), // Generate ID unik
+            name: name,
+            type: type
+        };
+        appData.categories.push(newCategory);
+    }
+
+    saveData(); // Simpan data ke localStorage
+    closeModal('category-modal'); // Tutup modal
+    renderCategories(); // Render ulang tabel kategori
+});
+
+// Fungsi untuk membuka modal edit kategori
+function openEditCategoryModal(category) {
+    document.getElementById('category-id').value = category.id;
+    document.getElementById('category-name').value = category.name;
+    document.getElementById('category-type').value = category.type;
+    openModal('category-modal');
+}
+
+// Fungsi untuk menghapus kategori
+function deleteCategory(categoryId) {
+    const category = appData.categories.find(c => c.id === categoryId);
+    if (category) {
+        // Cek apakah kategori adalah kategori default
+        const defaultCategories = ['Gaji', 'Makanan', 'Transportasi', 'Belanja', 'Hiburan'];
+        if (defaultCategories.includes(category.name)) {
+            alert('Kategori default tidak boleh dihapus!');
+            return;
+        }
+
+        if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
+            appData.categories = appData.categories.filter(c => c.id !== categoryId);
+            saveData(); // Simpan data ke localStorage
+            renderCategories(); // Render ulang tabel kategori
+        }
+    }
+}
+
+// Fungsi untuk membuka modal
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+// Fungsi untuk menutup modal
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Event listener untuk tombol close modal
+document.querySelectorAll('.modal .close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', function() {
+        const modal = this.closest('.modal');
+        closeModal(modal.id);
+    });
+});
+
+// Tutup modal saat klik di luar modal
+window.addEventListener('click', function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target === modal) {
+            closeModal(modal.id);
+        }
+    });
+});
+
+// Pasang event listener untuk tombol hapus semua kategori
+document.getElementById('btn-clear-categories').addEventListener('click', function() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua kategori?')) {
+        appData.categories = []; // Kosongkan array kategori
+        saveData(); // Simpan perubahan ke localStorage
+        renderCategories(); // Render ulang tabel kategori
+    }
+});
+
+// Fungsi untuk menghapus semua transaksi
+function clearAllTransactions() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua transaksi? Tindakan ini tidak dapat dibatalkan!')) {
+        appData.transactions = []; // Kosongkan array transaksi
+        saveData(); // Simpan perubahan ke localStorage
+        renderTransactions(); // Render ulang tabel transaksi
+        updateDashboard(); // Perbarui dashboard
+    }
+}
+
+// Event listener untuk tombol "Hapus Semua Transaksi"
+document.getElementById('btn-clear-transactions').addEventListener('click', clearAllTransactions);
+
+// Fungsi untuk memfilter transaksi berdasarkan tanggal
+function filterTransactionsByDate(date) {
+    if (!date) {
+        return appData.transactions; // Jika tidak ada tanggal, kembalikan semua transaksi
+    }
+
+    // Filter transaksi berdasarkan tanggal yang dipilih
+    return appData.transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
+        return transactionDate === date;
+    });
+}
+
+// Fungsi untuk merender transaksi yang sudah difilter
+function renderFilteredTransactions(date) {
+    const filteredTransactions = filterTransactionsByDate(date);
+    const tbody = document.querySelector('#transaction-table tbody');
+    tbody.innerHTML = ''; // Kosongkan tabel
+
+    let saldo = 0; // Inisialisasi saldo
+
+    filteredTransactions.forEach(t => {
+        if (t.type === 'income') {
+            saldo += t.amount;
+        } else if (t.type === 'expense') {
+            saldo -= t.amount;
+        }
+
+        // Cari kategori berdasarkan ID
+        const category = appData.categories.find(c => c.id === t.category);
+        const categoryName = category ? category.name : 'Kategori Tidak Ditemukan';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(t.date).toLocaleDateString()}</td>
+            <td>${t.description}</td>
+            <td>${categoryName}</td>
+            <td class="text-success">${t.type === 'income' ? formatCurrency(t.amount) : '-'}</td>
+            <td class="text-danger">${t.type === 'expense' ? formatCurrency(t.amount) : '-'}</td>
+            <td>${formatCurrency(saldo)}</td>
+            <td>
+                <button class="btn btn-warning btn-edit-transaction" data-id="${t.id}">Edit</button>
+                <button class="btn btn-danger btn-delete-transaction" data-id="${t.id}">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Pasang event listener untuk tombol edit dan hapus
+    attachTransactionEventListeners();
+}
+
+// Event listener untuk input pencarian tanggal
+document.getElementById('search-date').addEventListener('change', function() {
+    const selectedDate = this.value; // Ambil tanggal yang dipilih
+    renderFilteredTransactions(selectedDate); // Render transaksi yang difilter
+});
+// Data Store dan fungsi lainnya tetap sama
+
+        // -------------------- EXPORT EXCEL --------------------
+        document.getElementById('btn-export-excel').addEventListener('click', function() {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Transaksi');
+
+            // Header tabel
+            worksheet.columns = [
+                { header: 'Tanggal', key: 'date', width: 15 },
+                { header: 'Deskripsi', key: 'description', width: 30 },
+                { header: 'Kategori', key: 'category', width: 20 },
+                { header: 'Pemasukan', key: 'income', width: 15 },
+                { header: 'Pengeluaran', key: 'expense', width: 15 },
+                { header: 'Saldo', key: 'balance', width: 15 }
+            ];
+
+            // Data transaksi
+            let saldo = 0;
+            appData.transactions.forEach(transaction => {
+                if (transaction.type === 'income') {
+                    saldo += transaction.amount;
+                } else {
+                    saldo -= transaction.amount;
+                }
+
+                worksheet.addRow({
+                    date: new Date(transaction.date).toLocaleDateString(),
+                    description: transaction.description,
+                    category: appData.categories.find(c => c.id === transaction.category)?.name || 'Unknown',
+                    income: transaction.type === 'income' ? transaction.amount : 0,
+                    expense: transaction.type === 'expense' ? transaction.amount : 0,
+                    balance: saldo
+                });
+            });
+
+            // Export ke file Excel
+            workbook.xlsx.writeBuffer().then(buffer => {
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'transaksi.xlsx';
+                link.click();
+            });
+        });
+
+         // -------------------- EXPORT PDF --------------------
+         
+         function exportTransactionsToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+        // Ambil judul dari localStorage
+    const judul = localStorage.getItem('judulAplikasi') || 'Aplikasi Pencatatan Keuangan';
+
+    // Judul laporan
+    const title = `Laporan Transaksi Keuangan - ${judul}`;
+    const fontSize = 14;
+    const titleX = 40;
+    const titleY = 30;
+
+    // Tambahkan judul ke PDF
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, titleX, titleY);
+
+    // Hitung rentang tanggal transaksi
+    const transactions = appData.transactions;
+
+    if (transactions.length === 0) {
+        alert("Tidak ada transaksi untuk diekspor!");
+        return;
+    }
+
+    // Ambil tanggal pertama dan terakhir
+    const dates = transactions.map(t => new Date(t.date).getTime()); // Konversi ke timestamp
+    const minDate = new Date(Math.min(...dates)); // Tanggal terawal
+    const maxDate = new Date(Math.max(...dates)); // Tanggal terakhir
+
+    // Format tanggal ke teks (contoh: 1 Oktober 2023 - 31 Oktober 2023)
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const dateRangeText = `Periode: ${minDate.toLocaleDateString('id-ID', options)} - ${maxDate.toLocaleDateString('id-ID', options)}`;
+
+    // Tambahkan judul ke PDF
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, titleX, titleY);
+
+    // Tambahkan rentang tanggal ke PDF
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(dateRangeText, titleX, titleY + 20);
+
+    // Hitung total pemasukan, total pengeluaran, dan saldo terakhir
+    const totals = calculateTransactionTotals();
+
+    // Data transaksi
+    const data = [];
+    let saldo = 0;
+    appData.transactions.forEach(transaction => {
+        if (transaction.type === 'income') {
+            saldo += transaction.amount;
+        } else if (transaction.type === 'expense') {
+            saldo -= transaction.amount;
+        }
+
+        data.push([
+            new Date(transaction.date).toLocaleDateString('id-ID'), // Format tanggal Indonesia
+            transaction.description,
+            appData.categories.find(c => c.id === transaction.category)?.name || 'Unknown',
+            transaction.type === 'income' ? formatCurrency(transaction.amount) : '-',
+            transaction.type === 'expense' ? formatCurrency(transaction.amount) : '-',
+            formatCurrency(saldo)
+        ]);
+    });
+
+    // Tambahkan tabel transaksi ke PDF
+    doc.autoTable({
+        startY: titleY + 40, // Mulai tabel di bawah judul dan rentang tanggal
+        head: [['Tanggal', 'Deskripsi', 'Kategori', 'Pemasukan', 'Pengeluaran', 'Saldo']],
+        body: data,
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            0: { cellWidth: 60 },
+            1: { cellWidth: 100 },
+            2: { cellWidth: 80 },
+            3: { cellWidth: 80 },
+            4: { cellWidth: 80 },
+            5: { cellWidth: 80 }
+        },
+        didDrawPage: (data) => {
+            // Tambahkan informasi total pemasukan, total pengeluaran, dan saldo terakhir di bawah tabel
+            const finalY = data.cursor.y + 20; // Posisi Y setelah tabel
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Total Pemasukan: ${formatCurrency(totals.totalIncome)}`, titleX, finalY);
+            doc.text(`Total Pengeluaran: ${formatCurrency(totals.totalExpense)}`, titleX, finalY + 20);
+            doc.text(`Saldo Terakhir: ${formatCurrency(totals.balance)}`, titleX, finalY + 40);
+        }
+    });
+
+    // Simpan file PDF
+    doc.save('laporan-transaksi.pdf');
+}
+
+// Event listener untuk tombol "Export ke PDF"
+document.getElementById('btn-export-pdf').addEventListener('click', exportTransactionsToPDF);
+
+// Helper function to format currency
+function formatCurrency(amount) {
+    return amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// Helper function to calculate transaction totals
+function calculateTransactionTotals() {
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let balance = 0;
+
+    appData.transactions.forEach(transaction => {
+        if (transaction.type === 'income') {
+            totalIncome += transaction.amount;
+            balance += transaction.amount;
+        } else if (transaction.type === 'expense') {
+            totalExpense += transaction.amount;
+            balance -= transaction.amount;
+        }
+    });
+
+    return {
+        totalIncome,
+        totalExpense,
+        balance
+    };
+}
+
+function clearAllSavingsHistory() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua histori tabungan? Tindakan ini tidak dapat dibatalkan!')) {
+        appData.savingsHistory = []; // Kosongkan array histori tabungan
+        saveData(); // Simpan perubahan ke localStorage
+        renderSavingsHistory(); // Render ulang tabel histori tabungan
+    }
+}
+
+// Event listener untuk tombol "Hapus Semua Histori Tabungan"
+document.getElementById('btn-clear-savings-history').addEventListener('click', clearAllSavingsHistory);
+
+  function exportSavingsAndHistoryToExcel() {
+    const workbook = new ExcelJS.Workbook();
+
+    // Worksheet untuk daftar tabungan
+    const savingsWorksheet = workbook.addWorksheet('Daftar Tabungan');
+    savingsWorksheet.columns = [
+        { header: 'Nama Tabungan', key: 'name', width: 20 },
+        { header: 'Target (Rp)', key: 'target', width: 15 },
+        { header: 'Saldo Saat Ini (Rp)', key: 'currentBalance', width: 20 },
+        { header: 'Progress (%)', key: 'progress', width: 15 }
+    ];
+
+    // Data daftar tabungan
+    appData.savings.forEach(saving => {
+        const progress = ((saving.currentBalance / saving.target) * 100).toFixed(2);
+        savingsWorksheet.addRow({
+            name: saving.name,
+            target: formatCurrency(saving.target),
+            currentBalance: formatCurrency(saving.currentBalance),
+            progress: `${progress}%`
+        });
+    });
+
+    // Worksheet untuk histori tabungan
+    const historyWorksheet = workbook.addWorksheet('Histori Tabungan');
+    historyWorksheet.columns = [
+        { header: 'Tanggal', key: 'date', width: 15 },
+        { header: 'Nama Tabungan', key: 'savingsName', width: 20 },
+        { header: 'Setoran (Rp)', key: 'deposit', width: 15 },
+        { header: 'Penarikan (Rp)', key: 'withdraw', width: 15 },
+        { header: 'Saldo (Rp)', key: 'balance', width: 15 }
+    ];
+
+    // Data histori tabungan
+    let saldo = 0;
+    appData.savingsHistory.forEach(history => {
+        const savings = appData.savings.find(s => s.id === history.savingsId);
+        const deposit = history.type === 'deposit' ? history.amount : 0;
+        const withdraw = history.type === 'withdraw' ? history.amount : 0;
+        saldo += deposit - withdraw;
+
+        historyWorksheet.addRow({
+            date: new Date(history.date).toLocaleDateString(),
+            savingsName: savings ? savings.name : '-',
+            deposit: deposit > 0 ? formatCurrency(deposit) : '-',
+            withdraw: withdraw > 0 ? formatCurrency(withdraw) : '-',
+            balance: formatCurrency(saldo)
+        });
+    });
+
+    // Export ke file Excel
+    workbook.xlsx.writeBuffer().then(buffer => {
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'tabungan-dan-histori.xlsx';
+        link.click();
+    });
+}
+
+// Event listener untuk tombol "Export ke Excel"
+document.getElementById('btn-export-savings-excel').addEventListener('click', exportSavingsAndHistoryToExcel);
+
+      function exportSavingsAndHistoryToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+    // Ambil judul dari localStorage
+    const judul = localStorage.getItem('judulAplikasi') || 'Aplikasi Pencatatan Keuangan';
+
+    // Judul laporan
+    const title = `Laporan Tabungan - ${judul}`;
+    const fontSize = 14;
+    const titleX = 40;
+    const titleY = 30;
+
+    // Tambahkan judul ke PDF
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, titleX, titleY);
+
+    // Data daftar tabungan
+    const savingsData = appData.savings.map(saving => {
+        const progress = ((saving.currentBalance / saving.target) * 100).toFixed(2);
+        return [
+            saving.name,
+            formatCurrency(saving.target),
+            formatCurrency(saving.currentBalance),
+            `${progress}%`
+        ];
+    });
+
+    // Tambahkan tabel daftar tabungan ke PDF
+    doc.autoTable({
+        startY: titleY + 20, // Mulai tabel di bawah judul
+        head: [['Nama Tabungan', 'Target (Rp)', 'Saldo Saat Ini (Rp)', 'Progress (%)']],
+        body: savingsData,
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 80 },
+            2: { cellWidth: 80 },
+            3: { cellWidth: 80 }
+        }
+    });
+
+    // Data histori tabungan
+    let saldo = 0;
+    const historyData = appData.savingsHistory.map(history => {
+        const savings = appData.savings.find(s => s.id === history.savingsId);
+        const deposit = history.type === 'deposit' ? history.amount : 0;
+        const withdraw = history.type === 'withdraw' ? history.amount : 0;
+        saldo += deposit - withdraw;
+
+        return [
+            new Date(history.date).toLocaleDateString(),
+            savings ? savings.name : '-',
+            deposit > 0 ? formatCurrency(deposit) : '-',
+            withdraw > 0 ? formatCurrency(withdraw) : '-',
+            formatCurrency(saldo)
+        ];
+    });
+
+    // Tambahkan tabel histori tabungan ke PDF
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20, // Mulai tabel di bawah tabel sebelumnya
+        head: [['Tanggal', 'Nama Tabungan', 'Setoran (Rp)', 'Penarikan (Rp)', 'Saldo (Rp)']],
+        body: historyData,
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            0: { cellWidth: 60 },
+            1: { cellWidth: 80 },
+            2: { cellWidth: 80 },
+            3: { cellWidth: 80 },
+            4: { cellWidth: 80 }
+        }
+    });
+
+    // Simpan file PDF
+    doc.save('tabungan-dan-histori.pdf');
+}
+
+// Event listener untuk tombol "Export ke PDF"
+document.getElementById('btn-export-savings-pdf').addEventListener('click', exportSavingsAndHistoryToPDF);
+
+    function clearAllDebtHistory() {
+        if (confirm('Apakah Anda yakin ingin menghapus semua histori pembayaran hutang? Tindakan ini tidak dapat dibatalkan!')) {
+            appData.debtHistory = []; // Kosongkan array histori pembayaran hutang
+            saveData(); // Simpan perubahan ke localStorage
+            renderDebtHistory(); // Render ulang tabel histori pembayaran hutang
+        }
+    }
+
+    // Event listener untuk tombol "Hapus Semua Histori Pembayaran Hutang"
+    document.getElementById('btn-clear-debt-history').addEventListener('click', clearAllDebtHistory);
+
+    function exportDebtAndHistoryToExcel() {
+        const workbook = new ExcelJS.Workbook();
+
+        // Worksheet untuk daftar hutang
+        const debtWorksheet = workbook.addWorksheet('Daftar Hutang');
+        debtWorksheet.columns = [
+            { header: 'Nama/Deskripsi', key: 'name', width: 20 },
+            { header: 'Tanggal', key: 'date', width: 15 },
+            { header: 'Jatuh Tempo', key: 'dueDate', width: 15 },
+            { header: 'Jumlah (Rp)', key: 'amount', width: 15 },
+            { header: 'Sisa (Rp)', key: 'remaining', width: 15 },
+            { header: 'Status', key: 'status', width: 15 }
+        ];
+
+        // Data daftar hutang
+        appData.debts.forEach(debt => {
+            const remaining = debt.amount - debt.paid;
+            const status = remaining <= 0 ? 'Lunas' : 'Belum Lunas';
+            debtWorksheet.addRow({
+                name: debt.name,
+                date: new Date(debt.date).toLocaleDateString(),
+                dueDate: debt.dueDate ? new Date(debt.dueDate).toLocaleDateString() : '-',
+                amount: formatCurrency(debt.amount),
+                remaining: formatCurrency(remaining),
+                status: status
+            });
+        });
+
+        // Worksheet untuk histori pembayaran hutang
+        const historyWorksheet = workbook.addWorksheet('Histori Pembayaran Hutang');
+        historyWorksheet.columns = [
+            { header: 'Tanggal', key: 'date', width: 15 },
+            { header: 'Hutang', key: 'debtName', width: 20 },
+            { header: 'Jumlah Pembayaran (Rp)', key: 'amount', width: 20 }
+        ];
+
+        // Data histori pembayaran hutang
+        appData.debtHistory.forEach(history => {
+            const debt = appData.debts.find(d => d.id === history.debtId);
+            historyWorksheet.addRow({
+                date: new Date(history.date).toLocaleDateString(),
+                debtName: debt ? debt.name : '-',
+                amount: formatCurrency(history.amount)
+            });
+        });
+
+        // Export ke file Excel
+        workbook.xlsx.writeBuffer().then(buffer => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'hutang-dan-histori.xlsx';
+            link.click();
+        });
+    }
+
+    // Event listener untuk tombol "Export ke Excel"
+    document.getElementById('btn-export-debt-excel').addEventListener('click', exportDebtAndHistoryToExcel);
+
+// Fungsi untuk export data hutang dan histori pembayaran hutang ke PDF
+function exportDebtAndHistoryToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+// Ambil judul dari localStorage
+    const judul = localStorage.getItem('judulAplikasi') || 'Aplikasi Pencatatan Keuangan';
+
+    // Judul laporan
+    const title = `Laporan Hutang - ${judul}`;
+    const fontSize = 14;
+    const titleX = 40;
+    const titleY = 30;
+
+    // Tambahkan judul ke PDF
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, titleX, titleY);
+
+    // Data daftar hutang
+    const debtData = appData.debts.map(debt => {
+        const remaining = debt.amount - debt.paid;
+        const status = remaining <= 0 ? 'Lunas' : 'Belum Lunas';
+        return [
+            debt.name,
+            new Date(debt.date).toLocaleDateString(),
+            debt.dueDate ? new Date(debt.dueDate).toLocaleDateString() : '-',
+            formatCurrency(debt.amount),
+            formatCurrency(remaining),
+            status
+        ];
+    });
+
+    // Tambahkan tabel daftar hutang ke PDF
+    doc.autoTable({
+        startY: titleY + 20, // Mulai tabel di bawah judul
+        head: [['Nama/Deskripsi', 'Tanggal', 'Jatuh Tempo', 'Jumlah (Rp)', 'Sisa (Rp)', 'Status']],
+        body: debtData,
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 60 },
+            2: { cellWidth: 60 },
+            3: { cellWidth: 80 },
+            4: { cellWidth: 80 },
+            5: { cellWidth: 60 }
+        }
+    });
+
+    // Data histori pembayaran hutang
+    const historyData = appData.debtHistory.map(history => {
+        const debt = appData.debts.find(d => d.id === history.debtId);
+        return [
+            new Date(history.date).toLocaleDateString(),
+            debt ? debt.name : '-',
+            formatCurrency(history.amount)
+        ];
+    });
+
+    // Tambahkan tabel histori pembayaran hutang ke PDF
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20, // Mulai tabel di bawah tabel sebelumnya
+        head: [['Tanggal', 'Hutang', 'Jumlah Pembayaran (Rp)']],
+        body: historyData,
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            0: { cellWidth: 60 },
+            1: { cellWidth: 80 },
+            2: { cellWidth: 80 }
+        }
+    });
+
+    // Simpan file PDF
+    doc.save('hutang-dan-histori.pdf');
+}
+
+// Event listener untuk tombol "Export ke PDF"
+document.getElementById('btn-export-debt-pdf').addEventListener('click', exportDebtAndHistoryToPDF);
+   
+
+// Fungsi untuk memuat judul dari localStorage
+function loadJudulAplikasi() {
+    const judul = localStorage.getItem('judulAplikasi') || 'Aplikasi Pencatatan Keuangan';
+    document.querySelector('.header h1').textContent = judul;
+    document.getElementById('judul-aplikasi').value = judul;
+}
+
+// Fungsi untuk menyimpan judul ke localStorage
+function saveJudulAplikasi(judul) {
+    localStorage.setItem('judulAplikasi', judul);
+    document.querySelector('.header h1').textContent = judul;
+}
+
+// Event listener untuk form pengaturan
+document.getElementById('pengaturan-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const judul = document.getElementById('judul-aplikasi').value;
+    saveJudulAplikasi(judul);
+    closeModal('pengaturan-modal');
+});
+
+// Event listener untuk membuka modal pengaturan
+document.querySelector('.bottom-nav .nav-item[data-target="pengaturan"]').addEventListener('click', function() {
+    openModal('pengaturan-modal');
+});
+
+// Fungsi untuk membuka modal
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+// Fungsi untuk menutup modal
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Tutup modal saat klik di luar modal
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+});
+
+// Muat judul saat aplikasi dimuat
+document.addEventListener('DOMContentLoaded', loadJudulAplikasi);
+
+// Fungsi untuk mendapatkan tanggal hari ini dalam format YYYY-MM-DD
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Fungsi untuk membuka modal transaksi dan mengisi tanggal hari ini
+function openTransactionModal() {
+    const transactionDateInput = document.getElementById('transaction-date');
+    transactionDateInput.value = getTodayDate(); // Set nilai input tanggal ke hari ini
+    openModal('transaction-modal');
+}
+
+// Event listener untuk tombol "Tambah Transaksi"
+document.getElementById('btn-add-transaction').addEventListener('click', openTransactionModal);
+
+ // Interaktivitas Bottom Navigation Bar
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Hapus class active dari semua nav-item
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+                // Tambahkan class active ke nav-item yang diklik
+                this.classList.add('active');
+
+                // Tampilkan halaman yang sesuai
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+         // Fungsi untuk menghapus semua data daftar tabungan dan histori tabungan
+        function clearAllSavings() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua data daftar tabungan dan histori tabungan? Tindakan ini tidak dapat dibatalkan!')) {
+                appData.savings = []; // Kosongkan array savings
+                appData.savingsHistory = []; // Kosongkan array savingsHistory
+                saveData(); // Simpan perubahan ke localStorage
+                renderSavings(); // Render ulang tabel daftar tabungan
+                renderSavingsHistory(); // Render ulang tabel histori tabungan
+            }
+        }
+
+        // Event listener untuk tombol "Hapus Semua Data"
+        document.getElementById('btn-clear-savings').addEventListener('click', clearAllSavings);
+
+        // Panggil fungsi loadData saat aplikasi dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData(); // Muat data dari localStorage
+            renderSavings(); // Render tabel daftar tabungan
+            renderSavingsHistory(); // Render tabel histori tabungan
+        });
+
+        // Fungsi untuk menghapus semua data daftar hutang dan histori hutang
+function clearAllDebts() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua data daftar hutang dan histori hutang? Tindakan ini tidak dapat dibatalkan!')) {
+        appData.debts = []; // Kosongkan array debts
+        appData.debtHistory = []; // Kosongkan array debtHistory
+        saveData(); // Simpan perubahan ke localStorage
+        renderDebts(); // Render ulang tabel daftar hutang
+        renderDebtHistory(); // Render ulang tabel histori hutang
+    }
+}
+
+// Event listener untuk tombol "Hapus Semua Data"
+document.getElementById('btn-clear-debts').addEventListener('click', clearAllDebts);
+  </script>
+   
+    <footer style="text-align: center; margin-top: 20px; font-size: 10px; color: #555;">
+    © <span id="year"></span> Aplikasi Pencatatan Keuangan Oleh Ivan Hadian. Semua Hak Cipta Dilindungi.
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    
+</script>
+</body>
+</html>
